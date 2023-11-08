@@ -87,9 +87,9 @@ async function run() {
           query = {email:req.query.email}
         }
         console.log(query)
-        const result = await borrowedBooksCollection.find(query).toArray();
+        const resultt = await borrowedBooksCollection.find(query).toArray();
         
-        res.send(result);
+        res.send(resultt);
         
       })
       

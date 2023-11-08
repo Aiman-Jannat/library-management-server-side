@@ -67,6 +67,7 @@ async function run() {
       
       
       })
+
       app.get('/books',async(req,res)=>{
         console.log(req.query.category);
         let query = {};
@@ -75,6 +76,19 @@ async function run() {
           query = {category:req.query.category}
         }
         const result = await allBooksCollection.find(query).toArray();
+        res.send(result);
+        
+      })
+      app.get('/borrowed',async(req,res)=>{
+        // console.log(req.query.email);
+        let query = {};
+        if(req.query?.email)
+        {
+          query = {email:req.query.email}
+        }
+        console.log(query)
+        const result = await borrowedBooksCollection.find(query).toArray();
+        
         res.send(result);
         
       })
@@ -104,8 +118,15 @@ async function run() {
       console.log(id);
       const query = {_id:new ObjectId(id)}
       const user = await categoriesCollection .findOne(query);
-      
       res.send(user);
+     })
+     app.delete('/borrowed/:id', async(req, res)=>{
+
+      const id = req.params.id;
+      const query = {_id:new ObjectId(id)};
+      const result = await borrowedBooksCollection.deleteOne(query);
+      res.send(result);
+      
      })
     app.get('/books/:id',async(req,res)=>{
       const id = req.params.id;

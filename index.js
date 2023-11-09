@@ -3,10 +3,12 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT||5000;
 const cors = require('cors');
+// const jwt = require('jsonwebtoken')
 app.use(express.json());
 app.use(cors({
-  origin:"https://assignment-eleven-client-ed14d.web.app",
-  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  origin:["https://assignment-eleven-client-ed14d.web.app"],
+  methods: ['GET,POST,PUT,DELETE,OPTIONS'],
+  credentials:true
 }));
 
 app.use((req, res, next) => {
@@ -61,6 +63,29 @@ async function run() {
     const categoriesCollection = database.collection("categories")
     const borrowedBooksCollection = database.collection("borrowedBooks")
     // Send a ping to confirm a successful connection
+    
+    
+    app.post('/jwt',async(req,res)=>{
+      const user = req.body;
+      console.log("user for token",user);
+      const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET, {expiresIn:'1h'})
+      res.cookie('token',token,{
+        httpOnly:true,
+        secure:true,
+        sameSite:'none'
+      })
+      .send({success:true})
+    
+    
+    
+    })
+    app.post('/logout',async(req,res)=>{
+      const user = req.body;
+  res.clearCookie('token',{maxAge:0}).send({success:true})
+    })
+    
+    
+    
     app.put('/books/:id', async(req,res)=>{
       const id = req.params.id;
       const user = req.body;
@@ -84,7 +109,34 @@ async function run() {
       
       res.send(result);
       })
+
+
+
+
+
+      app.put('/books/:name', async(req,res)=>{
+        
+        const user = req.body;
+        const filter={name:String(user.name)};
+        const options={
+          upsert:true
+        }
+        const updatedUser={
+          $set:{
+            name:user.name,
+            image:user.image,
+            author:user.author,
+            rating:user.rating,
+            category:user.category,
+            quantity:user.quantityy
+            
     
+          }
+        }
+        const result = await allBooksCollection.updateOne(filter, updatedUser,options);
+        
+        res.send(result);
+        })
       
       app.post('/borrowed', async(req, res)=>{
         const user = req.body;

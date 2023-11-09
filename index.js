@@ -1,15 +1,41 @@
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const cors = require('cors');
-require('dotenv').config();
 const app = express();
 const port = process.env.PORT||5000;
+const cors = require('cors');
+app.use(express.json());
+app.use(cors({
+  origin:"https://assignment-eleven-client-ed14d.web.app",
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+}));
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  next();
+})
+
+
+
+const allowCors = fn => async (req, res) => {
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  // another common pattern
+  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  )}
+require('dotenv').config();
+
+
 
 
 //middleware
 
-app.use(cors());
-app.use(express.json());
+
 
 
 
@@ -55,6 +81,7 @@ async function run() {
         }
       }
       const result = await allBooksCollection.updateOne(filter, updatedUser,options);
+      
       res.send(result);
       })
     
@@ -67,6 +94,16 @@ async function run() {
       
       
       })
+      app.post('/books', async(req, res)=>{
+        const user = req.body;
+        console.log("user",user)
+        const result = await allBooksCollection.insertOne(user);
+        res.send(result);
+        
+      
+      
+      })
+
 
       app.get('/books',async(req,res)=>{
         console.log(req.query.category);

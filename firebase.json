@@ -1,0 +1,21 @@
+{
+  "hosting": {
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "https://assignment-eleven-library-server-dlu1h69dx-aimans-projects.vercel.app"
+          }
+        ],
+        "rewrites": [{ "source": "/(.*)", "destination": "/" }],
+        "ignore": [
+          "firebase.json",
+          "**/.*",
+          "**/node_modules/**"
+        ]
+      }
+    ]
+  }
+}
